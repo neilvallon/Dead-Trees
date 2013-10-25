@@ -34,14 +34,16 @@ function cons_count($word){ //function that counts the number of consonants at t
 
 }
 
+$msg = $_REQUEST['msg']; //the next 2 lines just resets the values to themselves... this is required in order to work in php5
+$sender = $_REQUEST['sender'];
+$hyf = $_REQUEST['hyf'];
+
 if($hyf == true){ //far from perfect but cheap and dirty way to add hyphen suport
 	$hyf = "-";
 }else{
 	$hyf = "";
 }
 
-$msg = $_REQUEST['msg']; //the next 2 lines just resets the values to themselves... this is required in order to work in php5
-$sender = $_REQUEST['sender'];
 $msg = nl2br(strtolower(strip_tags(stripslashes($msg)))); //cleans up the message a bit by striping any \'s HTML tags then converts the entire thing to lowercase since the script is case sensitive and finaly it makes any new lines to <br> tags to prevent crashes without entirely taking them out
 $msg = str_replace("<br />", " ~ ", $msg); //since the script is only looking at one character at a time we need to have a special character that can pass through the script unchanged
 $words = explode(" ", $msg); //splits the string into individual words
@@ -55,17 +57,23 @@ foreach($words as $word){ //for every word in the array
 		$lastLetter = substr($word, -1, 1);
 		$wordBeg = "";
 		$wordEnd = "";
+		$w = strlen($word);
+		$a=1;
 		
-		if(in_array($firstLetter, array('(', '\'', '"', '*', '{', '[', '~'))){ //if the first character matches any of these symbols
-			$wordBeg = $firstLetter; //set $wordBeg veriable that will be atached to the end of the word after it is converted
+		while(in_array($firstLetter, array('`', '~', '!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '_', '-', '=', '+', '{', '[', ']', '}', '|', ';', ':', '"', '\'', '<', ',', '>', '.', '?', '/')) && $a < $w){ //if the first character matches any of these symbols
+			$wordBeg .= $firstLetter; //set $wordBeg veriable that will be atached to the end of the word after it is converted
 			$word = substr($word, 1); //reset the $word to itself minus the first character
 			$firstLetter = substr($word, 0, 1); //resets the first character to the proper value
+            $a++;
 		}
 		
-		if(in_array($lastLetter, array(')', '\'', '"', '*', '.', ',', ';', ':', '!', '}', '{', '[', ']', '~'))){ //does the same as above but with the last letter
-			$wordEnd = $lastLetter;
+		$w = strlen($word);
+		$a=0;
+		while(in_array($lastLetter, array('`', '~', '!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '_', '-', '=', '+', '{', '[', ']', '}', '|', ';', ':', '"', '\'', '<', ',', '>', '.', '?', '/')) && $a < $w){ //does the same as above but with the last letter
+			$wordEnd .= $lastLetter;
 			$word = substr($word, 0, -1);
-			$lastLetter = substr($word, -2, 0);
+			$lastLetter = substr($word, -1, 1);
+			$a++;
 		}
 		
 		if(in_array($firstLetter, array("a", "e", "i", "o", "u"))){ //if the first letter is a vowel
@@ -99,10 +107,9 @@ if($sender != NULL){ //if there is a sender (the string was emailed to pig@neilv
 	mail($sender, "igpay atinlay", $endStr, "From: pig@neilvallon.com.com\r\n"); //Sent the translated string back to them
 }
 
-$endStr = str_replace("~~", "<br />", fix_for_page($endStr)); //convert the ~'s back into <br> tags and any special characters into HTML coded characters
-echo $endStr; //echo the finished string to the page
+$endStr = trim(str_replace(" ~ ", "\n", fix_for_page($endStr)." ")); //convert the ~'s back into <br> tags and any special characters into HTML coded characters
 ?>
-
+<textarea name="msg" id="msg" cols="50" rows="10"><?php echo $endStr; ?></textarea>
 <?php //stops the execution time counter and echos the footer with how long the script took and how many words it translated
 $script_end = microtime_float();
 echo '<br /><br /><br /><span style="font-size:12px;color:#616161;text-align:center;">Translated: ~'.$wordsTranslated." Words - in: ".bcsub($script_end, $script_start, 4)." seconds.<br />&copy; 2009 - Neil Vallon</span>";
