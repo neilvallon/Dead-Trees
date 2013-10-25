@@ -39,11 +39,15 @@ if($hyf == true){
 }else{
 	$hyf = "";	
 }
-$msg = strtolower(strip_tags($msg)); //stripts HTML tags and converts the string to lowercase
+$msg = nl2br(strtolower(strip_tags($msg))); //stripts HTML tags and converts the string to lowercase
+
+$msg = str_replace("<br />", " ~ ", $msg);
 
 $words = explode(" ", $msg); //splits the string up into words "hello my name is neil vallon" = array(hello, my, name, is, neil, vallon)
 
 foreach($words as $word){ //for every word in the sentence - convert it to pig latin
+	
+	$word = trim($word);
 	
 	if(!is_numeric($word)){
 	
@@ -53,13 +57,13 @@ $lastLetter = substr($word, -1, 1);
 $wordBeg = "";
 $wordEnd = "";
 	
-	if(in_array($firstLetter, array('(', '\'', '"', '*', '{', '['))){
+	if(in_array($firstLetter, array('(', '\'', '"', '*', '{', '[', '~'))){
 		$wordBeg = $firstLetter;
 		$word = substr($word, 1);
 		$firstLetter = substr($word, 1, 0);
 	}
 	
-	if(in_array($lastLetter, array(')', '\'', '"', '*', '.', ',', ';', ':', '!', '}', '{', '[', ']'))){
+	if(in_array($lastLetter, array(')', '\'', '"', '*', '.', ',', ';', ':', '!', '}', '{', '[', ']', '~'))){
 		$wordEnd = $lastLetter;
 		$word = substr($word, 0, -1);
 		$lastLetter = substr($word, -2, 0);
@@ -89,6 +93,8 @@ $wordEnd = "";
 	
 	$endStr .= $pigWord." "; //puts the pig latin word that was just generated on to the end of string so far with a space
 }
+
+$endStr = str_replace("~~", "<br />", $endStr);
 
 echo $endStr; //echos the finished sentence
 
