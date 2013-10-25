@@ -1,3 +1,13 @@
+<?php 
+function microtime_float()
+{
+    list($utime, $time) = explode(" ", microtime());
+    return ((float)$utime + (float)$time);
+}
+
+$script_start = microtime_float();
+?> 
+
 <?php
 /*
 
@@ -38,8 +48,25 @@ foreach($words as $word){ //for every word in the sentence - convert it to pig l
 	if(!is_numeric($word)){
 	
 $firstLetter = substr($word, 0, 1); //selects the first letter in the word
+$lastLetter = substr($word, -1, 1);
+
+$wordBeg = "";
+$wordEnd = "";
+	
+	if(in_array($firstLetter, array('(', '\'', '"', '*', '{', '['))){
+		$wordBeg = $firstLetter;
+		$word = substr($word, 1);
+		$firstLetter = substr($word, 1, 0);
+	}
+	
+	if(in_array($lastLetter, array(')', '\'', '"', '*', '.', ',', ';', ':', '!', '}', '{', '[', ']'))){
+		$wordEnd = $lastLetter;
+		$word = substr($word, 0, -1);
+		$lastLetter = substr($word, -2, 0);
+	}
+
 	if(in_array($firstLetter, array("a", "e", "i", "o", "u"))){ //if the first letter is a vowel
-	$pigWord = $word.$hyf."way"; //add "way" to the end and move on to the next word
+	$pigWord = $wordBeg.$word.$hyf."way".$wordEnd; //add "way" to the end and move on to the next word
 	}else{ //if it is a constanant
 		$numConst = cons_count($word); //cont the number of constanants before the first vowel ocures
 		
@@ -50,23 +77,13 @@ $firstLetter = substr($word, 0, 1); //selects the first letter in the word
 		}
 		
 		$leadingCons = substr($word, 0, $numConst); //starting at the begining of the word selects all the letters at the begining that are constanants and puts them into a veriable
-		$pigWord = substr($word, $numConst).$hyf.$leadingCons.$vowelend; //selects the word without the leading constanants and put them on the end with "ay" then moves on to the word
+		$pigWord = $wordBeg.substr($word, $numConst).$hyf.$leadingCons.$vowelend.$wordEnd; //selects the word without the leading constanants and put them on the end with "ay" then moves on to the word
 	}
 	
 	}else{
 	$pigWord = $word;	
 	}
-	/*
 	
-	
-	future work here
-	
-	make a loop that hapens for each word that get the length of the string and goes all the way through searching for punctuation then moveing them to the end
-	
-	this may be better suited for the begining of the loop before the vowel check to esure that a 500 error does not ocure
-	
-	
-	*/
 	
 	
 	
@@ -78,5 +95,9 @@ echo $endStr; //echos the finished sentence
 if($sender != NULL){ //this is so that if the page was oppened using my applescript code it can send the finished mesage back
 mail($sender, "igpay atinlay", $endStr, "From: pig@neilvallon.com.com\r\n");
 }
+?>
 
+<?php 
+   $script_end = microtime_float();
+echo "<br><br><br>Script executed in ".bcsub($script_end, $script_start, 4)." seconds.";
 ?>
