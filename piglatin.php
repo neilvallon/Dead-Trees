@@ -15,7 +15,7 @@ if(substr($word, 0, 2) == "qu"){ //qu word beguining fix so that word like quiet
 }else{
 	$a = 1; //counter for the number of constanance
 	$i = substr($word, $a, 1); //probably not needed but added just in case to make the while statment false
-	while(!in_array($i, array("a", "e", "i", "o", "u", "y"))){ //while the next letter is not a vowel
+	while(!in_array($i, array("a", "e", "i", "o", "u", "y")) && $a < strlen($word)){ //while the next letter is not a vowel
 		$a++; //add one to the contanant count
 		$i = substr($word, $a, 1); //set $i to the lext letter
 	}
@@ -35,15 +35,27 @@ $words = explode(" ", $msg); //splits the string up into words "hello my name is
 
 foreach($words as $word){ //for every word in the sentence - convert it to pig latin
 	
+	if(!is_numeric($word)){
+	
 $firstLetter = substr($word, 0, 1); //selects the first letter in the word
 	if(in_array($firstLetter, array("a", "e", "i", "o", "u"))){ //if the first letter is a vowel
 	$pigWord = $word.$hyf."way"; //add "way" to the end and move on to the next word
 	}else{ //if it is a constanant
 		$numConst = cons_count($word); //cont the number of constanants before the first vowel ocures
+		
+		if($numConst >= strlen($word)){
+			$vowelend = "";
+		}else{
+			$vowelend = "ay";
+		}
+		
 		$leadingCons = substr($word, 0, $numConst); //starting at the begining of the word selects all the letters at the begining that are constanants and puts them into a veriable
-		$pigWord = substr($word, $numConst).$hyf.$leadingCons."ay"; //selects the word without the leading constanants and put them on the end with "ay" then moves on to the word
+		$pigWord = substr($word, $numConst).$hyf.$leadingCons.$vowelend; //selects the word without the leading constanants and put them on the end with "ay" then moves on to the word
 	}
 	
+	}else{
+	$pigWord = $word;	
+	}
 	/*
 	
 	
@@ -64,7 +76,7 @@ $firstLetter = substr($word, 0, 1); //selects the first letter in the word
 echo $endStr; //echos the finished sentence
 
 if($sender != NULL){ //this is so that if the page was oppened using my applescript code it can send the finished mesage back
-mail($sender, "igpay atinlay", $endStr, "From: 8ball@neilvallon.com.com\r\n");
+mail($sender, "igpay atinlay", $endStr, "From: pig@neilvallon.com.com\r\n");
 }
 
 ?>
