@@ -50,6 +50,7 @@ $words = explode(" ", $msg); //splits the string into individual words
 $wordsTranslated = 0; //set the word counter to 0
 
 foreach($words as $word){ //for every word in the array
+	$hypen = $hyf;
 	$word = trim($word); //trim off any white space and other things that ar not needed and cause extra work and bad trancelations
 	
 	if(!is_numeric($word)){ //if the word is actualy a number we don't want to change it any
@@ -77,21 +78,21 @@ foreach($words as $word){ //for every word in the array
 		}
 		
 		if(in_array($firstLetter, array("a", "e", "i", "o", "u"))){ //if the first letter is a vowel
-			$pigWord = $wordBeg.$word.$hyf."way".$wordEnd; //set the finished word to the wordbegining (if any) the word itself, a hyphen if the option was selected, and the word end
+			$pigWord = $wordBeg.$word.$hypen."way".$wordEnd; //set the finished word to the wordbegining (if any) the word itself, a hyphen if the option was selected, and the word end
 		
 		}else{
 			$numConst = cons_count($word); //use the above function to count the number of consonants in $word
 			
 			if($numConst >= strlen($word)){ //if there where no vowels in the word
 				$vowelend = ""; //dont add anything to the end
-				$hyf = ""; //makes sure that a hyphen is not added
+				$hypen = ""; //makes sure that a hyphen is not added
 			
 			}else{
 				$vowelend = "ay"; //if everything is normal then add an "ay" to the end
 			}
 			
 			$leadingCons = substr($word, 0, $numConst); //sets up a veriable with the consonants at the begining of the word in it so they can be moved to the end
-			$pigWord = $wordBeg.substr($word, $numConst).$hyf.$leadingCons.$vowelend.$wordEnd; //set the finished word to the wordbegining (if any) the word itself without any of the consonants at the begining, a hyphen if the option was selected, the leading consonants, the vowel end, and finaly and the word end
+			$pigWord = $wordBeg.substr($word, $numConst).$hypen.$leadingCons.$vowelend.$wordEnd; //set the finished word to the wordbegining (if any) the word itself without any of the consonants at the begining, a hyphen if the option was selected, the leading consonants, the vowel end, and finaly and the word end
 		}
 	$wordsTranslated++; //add 1 to the word counter (not 100% acurate due to it counting spaces and breaks)
 	
