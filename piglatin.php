@@ -8,27 +8,11 @@ to see where the script actualy starts, skip down to the comment "//start of scr
 */
 
 function is_vowel($firstLetter){ //input: a letter - output: true or false
-switch ($firstLetter) {
-    case 'a':
-        $isTrue = true;
-        break;
-	case 'e':
-        $isTrue = true;
-        break;
-	case 'i':
-        $isTrue = true;
-        break;
-	case 'o':
-        $isTrue = true;
-        break;
-	case 'u':
-        $isTrue = true;
-        break;
-	case 'y':
-        $isTrue = true;
-        break;
-    default:
-       $isTrue = false;
+$vowels = array("a", "e", "i", "o", "u", "y"); //sets an array to look through for vowels
+if(in_array($firstLetter, $vowels)){ //searches the above array for the first letter of the word
+	$isTrue = true;
+}else{
+	$isTrue = false;
 }
 return $isTrue;	
 }
@@ -45,7 +29,7 @@ function cons_count($word){ //input: a word - output: number of constanants befo
 }
 
 //Start of script
-$msg = strtolower($msg); //converts the string to lowercase so that the "is_vowel()" function doesnt have to worry about capital letters
+$msg = strtolower(strip_tags($msg)); //stripts HTML tags and converts the string to lowercase so that the "is_vowel()" function doesnt have to worry about capital letters
 
 $words = explode(" ", $msg); //splits the string up into words "hello my name is neil vallon" = array(hello, my, name, is, neil, vallon)
 
