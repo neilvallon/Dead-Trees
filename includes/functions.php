@@ -9,8 +9,8 @@ function query($query) {
 		foreach($args as &$a) $a = mysql_real_escape_string($a);
 		return mysql_query(vsprintf($query, $args));	
 	}
-	
-function in_database($userEmail){
+
+function inUse($userEmail){
 	query("SELECT * FROM testUsers WHERE User_email='%s'", $userEmail);
 	return mysql_affected_rows();
 }
@@ -18,12 +18,12 @@ function in_database($userEmail){
 function addUser($email, $pass){
 	//verify email and password length
 	if(!filter_var($email, FILTER_VALIDATE_EMAIL)) return "Error: Invalid E-mail Address.";
+	if(inUse($email)) return 'Error: Email Already In Use.';
 	if(strlen($pass)<8) return "Error: Password Too Short.";
 
-	if(in_database($email)) return 'Error: Email Already In Use.';
-	require 'PasswordHash.php';
+	require('PasswordHash.php');
 	$hasher = new PasswordHash(8, FALSE);
-
-	return query("INSERT INTO testUsers (User_email, User_Password, User_RegDate, User_LastLogin, User_LoginIP, User_Agent) VALUES('%s', '%s', '%s', '%s', '%s', '%s')", $email, $hasher->HashPassword($pass), date('c'), date('c'), $_SERVER['REMOTE_ADDR'], $_SERVER['HTTP_USER_AGENT'])?'Success':'Failed';
+	
+	return query("INSERT INTO testUsers (UID, User_email, User_Password, User_RegDate, User_LastLogin, User_LoginIP, User_Agent) VALUES('%s', '%s', '%s', '%s', '%s', '%s', '%s')", base_convert(mt_rand(1000, 9999).microtime(true)*10000, 10, 36), $email, $hasher->HashPassword($pass), date('c'), date('c'), $_SERVER['REMOTE_ADDR'], $_SERVER['HTTP_USER_AGENT'])?'Success':'Failed';
 }
 ?>

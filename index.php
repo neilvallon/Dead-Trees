@@ -1,50 +1,33 @@
 <?php
-require_once('session.php');
-?>
+ob_start();
+$time = microtime();
+$time = explode(' ', $time);
+$time = $time[1] + $time[0];
+$start = $time;
+require_once('includes/session.php'); ?>
 <html>
 <head>
-<script src="jquery-1.6.2.js"></script>
-
-<script type='text/Javascript'>
-function signUp(){
-	$.post("post.php", { action: "signUp", email: $('#email').val(), pass: $('#pass').val() }, 
-		function(data){
-			$('#status').html(data);
-		});
-}
-function login(){
-	$.post("post.php", { action: "login", email: $('#email').val(), pass: $('#pass').val() }, 
-		function(data){
-			$('#status').html(data);
-		});
-}
-function logout(){
-	$.post("post.php", { action: "logout", email: $('#email').val(), pass: $('#pass').val() }, 
-		function(data){
-			$('#status').html(data);
-		});
-}
-</script>
+<script src="includes/jquery-1.6.2.js"></script>
+<script src="includes/ajaxRequests.js"></script>
 </head>
-
-
 <body>
-<?php if(!$sessionUser->logedin){ ?>
-<form>
-Username:<br>
-<input type="text" id="email" size="60"><br>
-Password:<br>
-<input type="password" id="pass" size="60"><br>
-<input type="button" value="Create user" onclick="signUp()">
-<input type="button" value="login" onclick="login()">
-</form>
-<?php }else{ ?>
-
-<br />
-You are now loged in! <input type="button" value="log out" onclick="logout()" />
-<br />
-
-<?php } ?>
+<?php require_once('getPage.php'); ?>
+<br /><br /><br />
 <div id='status'></div>
+<pre>
+
+<?php print_r($_SESSION); ?>
+
+<?php print_r($_COOKIE); ?>
+
+<?php
+$time = microtime();
+$time = explode(' ', $time);
+$time = $time[1] + $time[0];
+$finish = $time;
+$total_time = round(($finish - $start), 4);
+echo 'Page generated in '.$total_time.' seconds.'."\n";
+?>
+</pre>
 </body>
 </html>
