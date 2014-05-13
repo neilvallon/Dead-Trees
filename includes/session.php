@@ -42,7 +42,7 @@
  * @author     Neil Vallon <neilvallon@gmail.com>
  * @copyright  2011
  */
-
+ob_start();
 require_once('functions.php');
 $sessionUser = new sessionManager;
 
@@ -51,53 +51,46 @@ class sessionManager{
 	
 	function __construct(){
 		session_start();
-		$this->validateSession();
-		if(!$this->logedin && $this->cookieLogin()) $this->validateSession();
+		if(isset($_SESSION['UID']) && $this->UID = $_SESSION['UID']){
+			$this->validateSession();
+		}
+		if(!$this->logedin && $this->cookieLogin()) $this->logedin = true;
 	}
 
 
 	function validateSession(){
-		if(!isset($_SESSION['lastRegeneration']) or ++$_SESSION['lastRegeneration'] > 5){ //Swaps session every 5 checks
-			$_SESSION['lastRegeneration'] = 0;
-			$this->updateSessionID();
-		}
-		
-		if($this->UID){
-			$_SESSION['userid'] = $this->UID;
-			$_SESSION['agent'] = md5($_SERVER['HTTP_USER_AGENT']);
-			$this->logedin = true;
-			
-			return true;
-		}else{
-		
-		if(isset($_SESSION['initSessionToken']) && $this->initialUser()){
-			$this->UID = $_SESSION['userid'];
-			$this->logedin = true;
-		}else $this->logout();
+		$this->updateSessionID();
 
+		if($this->initialUser()){
+			$this->logedin = true;
+		}else{
+			$this->softLogout();
+			echo "You have loged in from another location";
 		}
 	}
+	
 	
 	function initialUser(){
-		if($_SESSION['agent'] == md5($_SERVER['HTTP_USER_AGENT']) //Will more than likely not change if same user
-		&& query("SELECT * FROM testUsers WHERE UID='%s' AND initSessionToken='%s'", $_SESSION['userid'], $_SESSION['initSessionToken']))
-			return mysql_affected_rows();
-		//Place warning message code for: "You have loged on from another location" here 
+		if(isset($_SESSION['initSessionToken'])
+		&& $_SESSION['agent'] == md5($_SERVER['HTTP_USER_AGENT']) //Will more than likely not change if same user
+		&& query("SELECT * FROM testUsers WHERE UID='%s' AND initSessionToken='%s'", $_SESSION['UID'], $_SESSION['initSessionToken']))
+			return mysql_affected_rows(); 
 	}
 	
-	
-	function logout(){
-		if($this->UID){
-			query("UPDATE testUsers SET initSessionToken='%s' WHERE UID='%s'", '', $this->UID);
-			if(isset($_COOKIE['remCookie'])){
-			setcookie('remCookie[ID]', '', time()-3600, '/');
-			setcookie('remCookie[Token]', '', time()-3600, '/');
-			}
-		}
+	function softLogout(){
 		$this->logedin = false;
 		unset($_SESSION);
 		session_destroy();
 		session_start();
+	}
+	
+	function logout(){
+		$this->softLogout();
+		if($this->UID) query("UPDATE testUsers SET initSessionToken='%s' WHERE UID='%s'", '', $this->UID);
+		if(isset($_COOKIE['remCookie'])){
+			setcookie('remCookie[ID]', '', time()-3600, '/');
+			setcookie('remCookie[Token]', '', time()-3600, '/');
+		}
 	}
 	
 	
@@ -107,17 +100,16 @@ class sessionManager{
 		$result = query("SELECT UID, User_Password FROM testUsers WHERE User_email='%s'", $email);
 		$result = mysql_fetch_array($result, MYSQL_ASSOC);
 	
-		if(mysql_affected_rows()){
+		if(mysql_affected_rows())
 			query("UPDATE testUsers SET User_LastLogin='%s', User_LoginIP='%s', User_Agent='%s' WHERE User_email='%s'",
 				date('c'), $_SERVER['REMOTE_ADDR'], $_SERVER['HTTP_USER_AGENT'], $email);
-		}
 	
 		if($hasher->CheckPassword($pass, $result['User_Password'])){
-			$this->UID = $result['UID'];
+			$_SESSION['agent'] = md5($_SERVER['HTTP_USER_AGENT']);
+			$this->UID = $_SESSION['UID'] = $result['UID'];
 			$this->updateSessionID();
 			if($rem) $this->setCookieToken();
-			$this->validateSession($this->UID);
-			
+			$this->logedin = true;
 			return true;
 		}
 	}
@@ -127,20 +119,21 @@ class sessionManager{
 		if(isset($_COOKIE['remCookie']['ID']) && isset($_COOKIE['remCookie']['Token'])
 		&& query("SELECT * FROM testUsers WHERE UID='%s' AND cookieToken='%s'", $_COOKIE['remCookie']['ID'], $_COOKIE['remCookie']['Token'])){
 			if(mysql_affected_rows()){
-				$this->UID = $_COOKIE['remCookie']['ID'];
-				//$this->setCookieToken();
+				$_SESSION['agent'] = md5($_SERVER['HTTP_USER_AGENT']);
+				$this->UID = $_SESSION['UID'] = $_COOKIE['remCookie']['ID'];
 				$this->updateSessionID();
-				return mysql_affected_rows();
-			}
+				return true;
+			}else $this->logout(); //mainly used to delete cookies
 		}
 	}
 	
 	
 	function updateSessionID(){
-		session_regenerate_id();
-		if($this->UID){
-			query("UPDATE testUsers SET initSessionToken='%s' WHERE UID='%s'", session_id(), $this->UID);
+		if(!isset($_SESSION['lastRegeneration']) or ++$_SESSION['lastRegeneration'] > 5){ //Swaps session every 5 checks
+			$_SESSION['lastRegeneration'] = 0;
 			$_SESSION['initSessionToken'] = session_id();
+			session_regenerate_id();
+			query("UPDATE testUsers SET initSessionToken='%s' WHERE UID='%s'", $_SESSION['initSessionToken'], $this->UID);
 		}
 	}
 		
