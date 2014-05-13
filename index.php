@@ -4,30 +4,38 @@ $time = microtime();
 $time = explode(' ', $time);
 $time = $time[1] + $time[0];
 $start = $time;
-require_once('includes/session.php'); ?>
-<html>
-<head>
-<script src="includes/jquery-1.6.2.js"></script>
-<script src="includes/ajaxRequests.js"></script>
-</head>
-<body>
-<?php require_once('getPage.php'); ?>
-<br /><br /><br />
-<div id='status'></div>
-<pre>
+require_once('includes/session.php');
 
-<?php print_r($_SESSION); ?>
+if(!isset($_POST['rem'])) $_POST['rem'] = false;
 
-<?php print_r($_COOKIE); ?>
+if(isset($_POST['email']) && isset($_POST['pass']) && isset($_POST['rem'])){
+	$sessionUser->login($_POST['email'], $_POST['pass'], $_POST['rem']);
+}
 
+if(!isset($_REQUEST['pageID'])) $_REQUEST['pageID'] = NULL;
+	switch($_REQUEST['pageID']){
+		case 'signUp':
+			require_once('templates/signUp.php');
+			break;
+		case 'logout':
+			$sessionUser->logout();
+			require_once('templates/login.php');
+			break;
+		default:
+			require_once('templates/login.php');
+		break;
+	}
+
+
+
+?>
+<div style="position:absolute;top:8px;right:8px;">
 <?php
 $time = microtime();
 $time = explode(' ', $time);
 $time = $time[1] + $time[0];
 $finish = $time;
 $total_time = round(($finish - $start), 4);
-echo 'Page generated in '.$total_time.' seconds.'."\n";
+echo '<h5>Page generated in '.$total_time.' seconds.</h5>';
 ?>
-</pre>
-</body>
-</html>
+</div>

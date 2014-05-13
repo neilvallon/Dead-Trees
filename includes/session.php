@@ -68,15 +68,11 @@ class sessionManager{
 	public $logedin, $logedOut, $UID, $output;
 
 	function __construct(){
+		$this->logedin = false;
 		session_start();
 		if(isset($_SESSION['UID']) && $this->UID = $_SESSION['UID']) $this->validateSession();
 		if(!$this->logedin && $this->cookieLogin()) $this->logedin = true;
 	}
-
-	function __destruct() {
-		echo $this->output;	
-	}
-
 
 	function validateSession(){
 		$this->updateSessionID();

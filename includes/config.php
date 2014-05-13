@@ -1,13 +1,13 @@
 <?php
 date_default_timezone_set('UTC');
 
-define('DB_NAME', ' ');
+define('DB_NAME', '');
 
-define('DB_USER', ' ');
+define('DB_USER', '');
 
-define('DB_PASSWORD', ' ');
+define('DB_PASSWORD', '');
 
-define('DB_HOST', ' ');
+define('DB_HOST', '');
 
 define('COOKIE_SALT', '`$|Bkx7SEZ#>}%#gL%-_Q|u+i1kOk$;+SJ-*D-zvhB38FHEw,d9d|)bG`46fE{d0');
 
