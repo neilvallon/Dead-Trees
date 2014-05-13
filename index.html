@@ -1,0 +1,60 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Motivator</title>
+<link rel="stylesheet" href="default_mooRainbow.css" type="text/css" />
+<script src="js/mootools.v1.11.js" type="text/javascript"></script>
+<script src="js/mooRainbow.js" type="text/javascript"></script>
+<script type="text/javascript">
+	window.addEvent('load', function() {
+	
+		var ex2 = new MooRainbow('myRainbow2', {
+			'id': 'mooRainbow2',
+			'wheel': true,
+			'startColor': [58, 142, 246],
+			'onChange': function(color) {
+				$('myInput2').value = color.hex;
+			}
+		});
+
+		var demo3 = new MooRainbow('demo3', {
+			id: 'myDemo3',
+			imgPath: 'images/'
+		});
+	});
+</script>
+</head>
+<body>
+<form method="post" action="view.php">
+  <p>Title
+      :
+      <input name="title" type="text" value="Perseverance" />
+     <br />
+     Text
+     :
+     <input name="texts" type="text" value="She really will be in the next castle. Honest." />
+	 	<br />
+    Color :
+       <input name="color" id="myInput2" type="text" size="13" value="#BD4400" />
+		  <img src="images/icon.gif" class="rain" id="myRainbow2" alt="Select" width="15" height="15" />
+	   <br />
+	Image URL :
+    <input name="url" type="text" value="http://neilvallon.com/pro/motivation/mario.gif" />
+	<br />
+	<br />
+	Max Image Width
+	:
+	<input name="width" type="text" size="6" maxlength="4" />
+	<br />
+	Alow Upscaleing:
+	<input type="checkbox" name="upscale" value="true" />
+	<br />
+	<br />
+      <input type="submit" value="Make Poster" />
+  </p>
+</form>
+<br />
+<br />
+<img src="pview.gif" />
+</body>
+</html>
