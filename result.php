@@ -1,4 +1,4 @@
-<?php require_once("http://neilvallon.com/_/header.php"); ?>
+<?php require_once("../../_/header.php"); ?>
 
 <?php
 function fix_for_page($value){
@@ -24,4 +24,4 @@ echo (1/$time)*$length." per second";
 ?>
 </div>
 
-<?php require_once("http://neilvallon.com/_/footer.html"); ?>
+<?php require_once("../../_/footer.html"); ?>
