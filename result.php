@@ -13,7 +13,12 @@ function fix_for_page($value){
 	return $value;
 }
 $deck = explode(",", fix_for_page($_REQUEST['dataSet']));
-if(sizeof($deck) >10) die("To Many Values");
+$iteration = fix_for_page($_REQUEST['startIteration']);
+$length = fix_for_page($_REQUEST['length']);
+if(!is_numeric($iteration)) $iteration = 0;
+if(!is_numeric($length)) $length = 0;
+
+if(sizeof($deck)>8) die("To Many Values. sorry.<br /><a href='index.html'>Back</a>");
 $time_start = microtime(true);
 require("swapPattern.php");
 ?>
@@ -21,8 +26,8 @@ require("swapPattern.php");
 <?php
 $time_end = microtime(true);
 $time = $time_end - $time_start;
-echo 'Generated: '.factorial(sizeof($deck))." results - in: ".round($time, 4)." seconds.";
+echo 'Generated: '.$resultCount." results - in: ".round($time, 4)." seconds.";
 ?>
-<br />&copy; 2009 - Neil Vallon</div>
+<br />&copy; 2010 - Neil Vallon</div>
 </body>
 </html>
